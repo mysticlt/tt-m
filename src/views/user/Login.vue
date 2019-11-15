@@ -26,6 +26,8 @@
 </template>
 
 <script>
+import { login } from '@/api/user'
+import { mapMutations } from 'vuex'
 export default {
   name: 'login',
   // 当失去焦点后，获取输入框的值，进行校验，失败的话给输入框绑定error-message属性赋值，成功清除值
@@ -73,7 +75,7 @@ export default {
       // 3. 成功
       this.errMsg.code = ''
     },
-    login () {
+    async login () {
       // 对整体表单进行校验
       this.checkMobile()
       this.checkCode()
@@ -82,7 +84,22 @@ export default {
         return false
       }
       // 如果校验成功进行登录
-    }
+      try {
+        // 基于request.js在api目录下封装一个调用接口的函数，当组件导入该函数使用即可。
+        const data = await login(this.loginForm)
+        // 登录成功
+        // 1. 更新 vuex 和 本地存储 用户信息
+        this.setUser(data)
+        // 2. 跳转（如果地址栏有回跳地址哪就回跳，如果没有跳转到个人中心）
+        const { redirectUrl } = this.$route.query
+        // || && 短路或 短路与
+        this.$router.push(redirectUrl || '/user')
+      } catch (e) {
+        // 登录失败
+        this.$toast.fail('手机号或验证码错误')
+      }
+    },
+    ...mapMutations(['setUser'])
   }
 }
 </script>
