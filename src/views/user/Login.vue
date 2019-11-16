@@ -26,7 +26,7 @@
 </template>
 
 <script>
-import { login } from '@/api/user'
+import { login } from '@/api/user.js'
 import { mapMutations } from 'vuex'
 export default {
   name: 'login',
