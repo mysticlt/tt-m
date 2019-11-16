@@ -2,7 +2,7 @@
   <div class="container">
     <!-- swipeable 开启手势切换功能 -->
     <van-tabs swipeable>
-      <van-tab :key="index" v-for="index in 8" :title="'标签 ' + index">
+      <van-tab :key="item.id" v-for="item in myChannels" :title="item.name">
         <!-- 滚动容器 -->
         <div class="scroll-wrapper">
           <van-pull-refresh
@@ -59,6 +59,7 @@
 </template>
 
 <script>
+import { getMyChannels } from '@/api/channel'
 export default {
   name: 'home-index',
   data () {
@@ -71,10 +72,22 @@ export default {
       // 是不是正在刷新中
       downLoading: false,
       // 刷新完毕后提示文字（暂无更新|更新成功）
-      refreshSuccessText: ''
+      refreshSuccessText: '',
+      // -------------------------------
+      // 我的频道数据
+      myChannels: []
     }
   },
+  created () {
+    // 获取频道数据
+    this.getMyChannels()
+  },
   methods: {
+    async getMyChannels () {
+      const data = await getMyChannels()
+      // 渲染频道(标签页 tabs组件)
+      this.myChannels = data.channels
+    },
     onLoad () {
       // @load特点：默认在组件初始化会加载一次。
       // @load特点：当加载的内容渲染后不足一屏，继续触发一次。
