@@ -5,9 +5,15 @@
       <van-tab :key="index" v-for="index in 8" :title="'标签 ' + index">
         <!-- 滚动容器 -->
         <div class="scroll-wrapper">
-          <van-list v-model="upLoading" :finished="finished" finished-text="没有更多了" @load="onLoad">
-            <van-cell v-for="item in articles" :key="item">{{item}}</van-cell>
-          </van-list>
+          <van-pull-refresh
+            v-model="downLoading"
+            @refresh="onRefresh"
+            :success-text="refreshSuccessText"
+          >
+            <van-list v-model="upLoading" :finished="finished" finished-text="没有更多了" @load="onLoad">
+              <van-cell v-for="item in articles" :key="item">{{item}}</van-cell>
+            </van-list>
+          </van-pull-refresh>
         </div>
       </van-tab>
     </van-tabs>
@@ -27,7 +33,11 @@ export default {
       // 是不是正在加载中
       upLoading: false,
       // 是不是已经加载完毕全部数据
-      finished: false
+      finished: false,
+      // 是不是正在刷新中
+      downLoading: false,
+      // 刷新完毕后提示文字（暂无更新|更新成功）
+      refreshSuccessText: ''
     }
   },
   methods: {
@@ -54,7 +64,32 @@ export default {
         }
         console.log('ok')
       }, 1000)
+    },
+    onRefresh () {
+      // @refresh  在下拉的时候松手触发
+      window.setTimeout(() => {
+        // 1. 结束正在刷新的效果
+        this.downLoading = false
+        // 2. 模拟数据
+        const data = [1, 2, 3, 4]
+        // const data = []
+        // 判断是否有数据
+        if (data.length) {
+          // 3. 更新数据
+          this.articles = data
+          // 4. 给刷新后的提示
+          this.refreshSuccessText = '更新成功'
+          // 5. 有可能不满足一屏  主动加载一次数据
+          this.onLoad()
+          // 6. 重置加载全部数据是否完毕状态
+          this.finished = false
+        } else {
+          // 3. 给刷新后的提示
+          this.refreshSuccessText = '暂无更新'
+        }
+      }, 1000)
     }
+
   }
 }
 </script>
