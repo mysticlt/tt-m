@@ -11,6 +11,11 @@ import 'vant/lib/index.less'
 // 自己的样式
 import '@/styles/index.less'
 
+// 自己的插件
+import plugin from '@/utils/plugin'
+
+Vue.use(plugin)
+
 Vue.use(Vant)
 
 Vue.config.productionTip = false
