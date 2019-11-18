@@ -29,7 +29,7 @@
                     <span>{{item.aut_name}}</span>
                     <span>{{item.comm_count}} 评论</span>
                     <span>{{item.pubdate|relTime}}</span>
-                    <span class="close">
+                    <span class="close" @click="openMoreAction" v-if="user.token">
                       <van-icon name="cross"></van-icon>
                     </span>
                   </div>
@@ -44,6 +44,8 @@
     <span class="bar_btn" slot="nav-right">
       <van-icon name="wap-nav"></van-icon>
     </span>
+    <!-- 使用组件：更多操作 -->
+    <more-action v-model="show"></more-action>
   </div>
 </template>
 
@@ -51,8 +53,11 @@
 import { getMyChannels } from '@/api/channel'
 import { getArticles } from '@/api/article'
 import { mapState } from 'vuex'
+import MoreAction from './components/MoreAction'
+
 export default {
   name: 'home-index',
+  components: { MoreAction },
   data () {
     return {
       // articles: [],
@@ -68,7 +73,9 @@ export default {
       // 我的频道数据
       myChannels: [],
       // 当前激活的频道索引
-      activeIndex: 0
+      activeIndex: 0,
+      // 显示更多操作
+      show: false
     }
   },
   computed: {
@@ -101,6 +108,10 @@ export default {
     }
   },
   methods: {
+    // 打开更多操作对话框
+    openMoreAction () {
+      this.show = true
+    },
     // 记录滚动位置
     remember (e) {
       // 给当前频道记录阅读位置
