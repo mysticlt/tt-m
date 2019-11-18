@@ -1,10 +1,10 @@
 <template>
   <div class="container">
     <!-- swipeable 开启手势切换功能 -->
-    <van-tabs swipeable>
-      <van-tab v-model="activeIndex" :key="item.id" v-for="item in myChannels" :title="item.name">
+    <van-tabs @change="changeChannel" swipeable v-model="activeIndex" :lazy-render="false">
+      <van-tab :key="item.id" v-for="item in myChannels" :title="item.name">
         <!-- 滚动容器 -->
-        <div class="scroll-wrapper">
+        <div class="scroll-wrapper" @scroll="remember($event)" ref="scroll-wrapper">
           <van-pull-refresh
             v-model="activeChannel.downLoading"
             @refresh="onRefresh"
@@ -82,7 +82,45 @@ export default {
     // 获取文章列表(组件初始化默认激活频道一定是：推荐)
     // this.getArticles()
   },
+  // 激活组件钩子(组件缓存) 初始化组件也会执行
+  activated () {
+    // 当前激活的频道的文章列表容器 scroll-warpper 滚动之前记录的位置
+    // scroll-warpper 有几个频道就有几个容器 是一个数组[dom,dam,...]
+    if (this.$refs['scroll-wrapper']) {
+      const dom = this.$refs['scroll-Wrapper'][this.activeIndex]
+      dom.scrollTop = this.activeChannel.scrollTop
+    }
+  },
   methods: {
+    // 记录滚动位置
+    remember (e) {
+      // 给当前频道记录阅读位置
+      this.activeChannel.scrollTop = e.target.scrollTop
+    },
+    // 切换频道
+    changeChannel () {
+      // （当前频道无文章数据）自己来加载数据
+      if (!this.activeChannel.articles.length) {
+        // （当前频道无文章数据）自己来加载数据
+        this.activeChannel.upLoading = true
+        this.onLoad()
+      } else {
+        // 根据当前频道记录位置进行滚动(覆盖tab组件滚动到顶部功能)
+        // 我们滚动的操作一定要在tab组件滚动操作之后执行
+
+        // 我们自己操作滚动代码(让代码在最后执行)
+        // window.setTimeout(()=>{
+
+        // })
+        // tab执行默认滚动的代码
+
+        // vue项目中 使用$nextTick() 下一帧
+        this.$nextTick(() => {
+          const dom = this.$refs['scroll-wrapper'][this.activeIndex]
+          dom.scrollTop = this.activeChannel.scrollTop
+        })
+      }
+    },
     async getMyChannels () {
       const data = await getMyChannels()
       // 渲染频道(标签页 tabs组件)
@@ -97,7 +135,9 @@ export default {
           upLoading: false,
           downLoading: false,
           finished: false,
-          timestamp: Date.now()
+          timestamp: Date.now(),
+          // 记录阅读位置
+          scrollTop: 0
         }
       })
     },
