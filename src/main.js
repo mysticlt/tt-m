@@ -6,7 +6,7 @@ import store from './store'
 // 导入设置基准值创建
 import 'amfe-flexible'
 // 导入Vant移动端组件库
-import Vant from 'vant'
+import Vant, { Lazyload } from 'vant'
 import 'vant/lib/index.less'
 // 自己的样式
 import '@/styles/index.less'
@@ -14,8 +14,8 @@ import '@/styles/index.less'
 // 自己的插件
 import plugin from '@/utils/plugin'
 
+Vue.use(Lazyload)
 Vue.use(plugin)
-
 Vue.use(Vant)
 
 Vue.config.productionTip = false
