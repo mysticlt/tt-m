@@ -10,7 +10,10 @@
     <!-- 内容容器 -->
     <div class="my-wrapper" :class="{noTop:path==='/user'}">
       <!-- 二级组件路由显示位置 -->
-      <router-view></router-view>
+      <keep-alive>
+        <router-view v-if="$route.meta.keepAlive"></router-view>
+      </keep-alive>
+      <router-view v-if="!$route.meta.keepAlive"></router-view>
     </div>
     <!-- tab栏 -->
     <van-tabbar route>
