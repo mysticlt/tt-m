@@ -50,6 +50,7 @@
 <script>
 import { getMyChannels } from '@/api/channel'
 import { getArticles } from '@/api/article'
+import { mapState } from 'vuex'
 export default {
   name: 'home-index',
   data () {
@@ -74,6 +75,14 @@ export default {
     // 获取当前激活的频道对象
     activeChannel () {
       return this.myChannels[this.activeIndex]
+    },
+    ...mapState(['user'])
+  },
+  watch: {
+    user () {
+      // 更新当前频道(默认激活推荐)
+      this.activeIndex = 0
+      this.getMyChannels()
     }
   },
   created () {
@@ -127,21 +136,23 @@ export default {
       // this.myChannels = data.channels
       // myChannels 每一项值包含 频道ID 频道名称
       // myChannels 每一项值包含 频道ID 频道名称 + 文章列表 + 正在加载 + 正在刷新 + 是否全部加载 + 时间戳
-      this.myChannels = data.channels.map(item => {
-        return {
-          id: item.id,
-          name: item.name,
-          articles: [],
-          upLoading: false,
-          downLoading: false,
-          finished: false,
-          timestamp: Date.now(),
-          // 记录阅读位置
-          scrollTop: 0
-        }
+      this.myChannels = [] // 清除tabs组件的缓存
+      this.$nextTick(() => {
+        this.myChannels = data.channels.map(item => {
+          return {
+            id: item.id,
+            name: item.name,
+            articles: [],
+            upLoading: false,
+            downLoading: false,
+            finished: false,
+            timestamp: Date.now(),
+            // 记录阅读位置
+            scrollTop: 0
+          }
+        })
       })
     },
-
     async onRefresh () {
       // // @refresh  在下拉的时候松手触发
       // window.setTimeout(() => {
