@@ -29,7 +29,7 @@
                     <span>{{item.aut_name}}</span>
                     <span>{{item.comm_count}} 评论</span>
                     <span>{{item.pubdate|relTime}}</span>
-                    <span class="close" @click="openMoreAction" v-if="user.token">
+                    <span class="close" @click.stop="openMoreAction(item.art_id.toString())" :articleId="articleId" @on-dislikes="removeArticle()" v-if="user.token">
                       <van-icon name="cross"></van-icon>
                     </span>
                   </div>
@@ -45,7 +45,13 @@
       <van-icon name="wap-nav"></van-icon>
     </span>
     <!-- 使用组件：更多操作 -->
-    <more-action v-model="show"></more-action>
+    <more-action
+    v-model="showMoreAction"
+    @on-dislikes="removeArticle"
+    :articleId="articleId"
+    @on-report='removeArticle()'
+    >
+    </more-action>
   </div>
 </template>
 
@@ -75,7 +81,9 @@ export default {
       // 当前激活的频道索引
       activeIndex: 0,
       // 显示更多操作
-      show: false
+      showMoreAction: false,
+      // 当前点击文章ID
+      articleId: null
     }
   },
   computed: {
@@ -108,9 +116,17 @@ export default {
     }
   },
   methods: {
+    // 删除文章
+    removeArticle () {
+      // console.log('父组件收到通知')
+      const index = this.activeChannel.articles.findIndex(item => item.art_id.toString() === this.articleId)
+      // splice(索引，删除几条)
+      this.activeChannel.articles.splice(index, 1)
+    },
     // 打开更多操作对话框
-    openMoreAction () {
-      this.show = true
+    openMoreAction (id) {
+      this.showMoreAction = true
+      this.articleId = id
     },
     // 记录滚动位置
     remember (e) {
