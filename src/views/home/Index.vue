@@ -53,7 +53,7 @@
     >
     </more-action>
     <!-- 使用组件：频道编辑 -->
-    <channel-edit v-model="showChannelEdit"></channel-edit>
+    <channel-edit v-model="showChannelEdit" :myChannels="myChannels"  :activeIndex="activeIndex"></channel-edit>
   </div>
 </template>
 
