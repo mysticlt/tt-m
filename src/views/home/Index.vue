@@ -41,7 +41,7 @@
       </van-tab>
     </van-tabs>
     <!-- 频道按钮 -->
-    <span class="bar_btn" slot="nav-right">
+    <span class="bar_btn" @click="openChannelEdit" slot="nav-right">
       <van-icon name="wap-nav"></van-icon>
     </span>
     <!-- 使用组件：更多操作 -->
@@ -52,6 +52,8 @@
     @on-report='removeArticle()'
     >
     </more-action>
+    <!-- 使用组件：频道编辑 -->
+    <channel-edit v-model="showChannelEdit"></channel-edit>
   </div>
 </template>
 
@@ -60,10 +62,11 @@ import { getMyChannels } from '@/api/channel'
 import { getArticles } from '@/api/article'
 import { mapState } from 'vuex'
 import MoreAction from './components/MoreAction'
+import ChannelEdit from './components/ChannelEdit'
 
 export default {
   name: 'home-index',
-  components: { MoreAction },
+  components: { MoreAction, ChannelEdit },
   data () {
     return {
       // articles: [],
@@ -83,7 +86,9 @@ export default {
       // 显示更多操作
       showMoreAction: false,
       // 当前点击文章ID
-      articleId: null
+      articleId: null,
+      // 频道显示编辑
+      showChannelEdit: false
     }
   },
   computed: {
@@ -116,6 +121,10 @@ export default {
     }
   },
   methods: {
+    // 打开频道管理
+    openChannelEdit () {
+      this.showChannelEdit = true
+    },
     // 删除文章
     removeArticle () {
       // console.log('父组件收到通知')
